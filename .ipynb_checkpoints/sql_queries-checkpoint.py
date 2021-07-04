@@ -1,14 +1,14 @@
 # DROP TABLES
 
-songplay_table_drop = "DROP TABLE IF EXISTS songplay;"
+songplay_table_drop = "DROP TABLE IF EXISTS songplays;"
 user_table_drop = "DROP TABLE IF EXISTS users;"
-song_table_drop = "DROP TABLE IF EXISTS song;"
-artist_table_drop = "DROP TABLE IF EXISTS artist;"
+song_table_drop = "DROP TABLE IF EXISTS songs;"
+artist_table_drop = "DROP TABLE IF EXISTS artists;"
 time_table_drop = "DROP TABLE IF EXISTS time;"
 
 # CREATE TABLES
 songplay_table_create = ("""
-    CREATE TABLE songplay (
+    CREATE TABLE songplays (
         songplay_id serial PRIMARY KEY,
         start_time timestamp, 
         user_id int, 
@@ -32,7 +32,7 @@ user_table_create = ("""
 """)
 
 song_table_create = ("""
-    CREATE TABLE song (
+    CREATE TABLE songs (
         song_id varchar PRIMARY KEY, 
         title varchar,
         artist_id varchar,
@@ -42,7 +42,7 @@ song_table_create = ("""
 """)
 
 artist_table_create = ("""
-    CREATE TABLE artist(
+    CREATE TABLE artists (
         artist_id varchar PRIMARY KEY,
         name varchar,
         location varchar,
@@ -67,7 +67,7 @@ time_table_create = ("""
 
 
 songplay_table_insert = ("""
-    INSERT INTO songplay(
+    INSERT INTO songplays (
 	start_time,  user_id, level, song_id, artist_id,  session_id,  location,  user_agent)
 	VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
 """)
@@ -80,14 +80,14 @@ user_table_insert = ("""
     """)
 
 song_table_insert = ("""
-    INSERT INTO song (song_id,  title, artist_id, year, duration)
+    INSERT INTO songs (song_id,  title, artist_id, year, duration)
     VALUES
     (%s, %s, %s, %s, %s)
     ON CONFLICT (song_id) DO NOTHING;
 """)
 
 artist_table_insert = ("""
-    INSERT INTO artist (artist_id, name, location, latitude, longitude)
+    INSERT INTO artists (artist_id, name, location, latitude, longitude)
     VALUES
     (%s, %s, %s, %s, %s)
     ON CONFLICT (artist_id) DO NOTHING;
@@ -104,8 +104,8 @@ time_table_insert = ("""
 # FIND SONGS
 song_select = ("""
     SELECT s.song_id, s.artist_id 
-        FROM song s
-        INNER JOIN artist a
+        FROM songs s
+        INNER JOIN artists a
         ON s.artist_id = a.artist_id
     WHERE 
         s.title = %s 
