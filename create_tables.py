@@ -10,7 +10,7 @@ def create_database():
     
     try: 
     # connect to default database
-        conn = psycopg2.connect("host=127.0.0.1 dbname=studentdb user=student password=student")
+        conn = psycopg2.connect("host=localhost dbname=sparkifydb user=postgres password=marco")
         conn.set_session(autocommit=True)
         cur = conn.cursor()
     except psycopg2.Error as e:
@@ -37,7 +37,7 @@ def create_database():
     
     try:
     # connect to sparkify database
-        conn = psycopg2.connect("host=127.0.0.1 dbname=sparkifydb user=student password=student")
+        conn = psycopg2.connect("host=localhost dbname=sparkifydb user=postgres password=marco")
         cur = conn.cursor()
     except psycopg2.Error as e:
         print('Error: Could not to get database connection or cursor')

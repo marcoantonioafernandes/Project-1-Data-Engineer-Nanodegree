@@ -2,6 +2,7 @@ import os
 import glob
 import psycopg2
 import pandas as pd
+pd.options.mode.chained_assignment = None  # default='warn'
 from sql_queries import *
 
 
@@ -48,9 +49,9 @@ def process_log_file(cur, filepath):
     # convert timestamp column to datetime
     t = pd.to_datetime(df['ts'], unit='ms')
     df['timestamp'] = pd.to_datetime(df['ts'], unit='ms')
-    
+
     # insert time data records
-    time_data = (t, t.dt.hour, t.dt.day, t.dt.week, t.dt.month, t.dt.year, t.dt.weekday)
+    time_data = (t, t.dt.hour, t.dt.day, t.dt.isocalendar().week, t.dt.month, t.dt.year, t.dt.weekday)
     column_labels = ('start_time', 'hour', 'day', 'week', 'month', 'year', 'weekday')
     time_df =  pd.DataFrame(dict(zip(column_labels,time_data)))
     try:
@@ -122,7 +123,7 @@ def process_data(cur, conn, filepath, func):
 
 def main():
     try:
-        conn = psycopg2.connect("host=127.0.0.1 dbname=sparkifydb user=student password=student")
+        conn = psycopg2.connect("host=localhost dbname=sparkifydb user=postgres password=marco")
         cur = conn.cursor()
     except psycopg2.Error as e:
         print('Error: Could not to get database connection or cursor')
