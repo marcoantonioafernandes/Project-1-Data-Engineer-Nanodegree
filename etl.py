@@ -18,20 +18,12 @@ def process_song_file(cur, filepath):
     # insert song record
     song_data = list(df[['song_id', 'title', 'artist_id', 'year', 'duration']].values[0])
     
-    try:
-        cur.execute(song_table_insert, song_data)
-    except psycopg2.Error as e:
-        print('Error: Could not execute query to insert songs')
-        print(e)
+    cur.execute(song_table_insert, song_data)
     
     # insert artist record
     artist_data = list(df[['artist_id', 'artist_name', 'artist_location', 'artist_latitude', 'artist_longitude']].values[0])
     
-    try:
-        cur.execute(artist_table_insert, artist_data)
-    except psycopg2.Error as e:
-        print('Error: Could not execute query to insert artists')
-        print(e)
+    cur.execute(artist_table_insert, artist_data)
 
 
 def process_log_file(cur, filepath):
@@ -54,44 +46,36 @@ def process_log_file(cur, filepath):
     time_data = (t, t.dt.hour, t.dt.day, t.dt.isocalendar().week, t.dt.month, t.dt.year, t.dt.weekday)
     column_labels = ('start_time', 'hour', 'day', 'week', 'month', 'year', 'weekday')
     time_df =  pd.DataFrame(dict(zip(column_labels,time_data)))
-    try:
-        for i, row in time_df.iterrows():
-            cur.execute(time_table_insert, list(row))
-    except psycopg2.Error as e:
-        print('Error: Could not execute query to insert times')
-        print(e)
+    for i, row in time_df.iterrows():
+        cur.execute(time_table_insert, list(row))
+
 
     # load user table
     user_df = df[['userId', 'firstName', 'lastName', 'gender','level']]
     
 
     # insert user records
-    try:
-        for i, row in user_df.iterrows():
-            cur.execute(user_table_insert, row)
-    except psycopg2.Error as e:
-        print('Error: Could not execute query to insert users')
-        print(e)
+
+    for i, row in user_df.iterrows():
+        cur.execute(user_table_insert, row)
 
     
     # insert songplay records
-    try:
-        for index, row in df.iterrows():
-            # get songid and artistid from song and artist tables
-            cur.execute(song_select, (row.song, row.artist, row.length))
-            results = cur.fetchone()
 
-            if results:
-                songid, artistid = results
-            else:
-                songid, artistid = None, None
+    for index, row in df.iterrows():
+        # get songid and artistid from song and artist tables
+        cur.execute(song_select, (row.song, row.artist, row.length))
+        results = cur.fetchone()
 
-            # insert songplay record
-            songplay_data = (row.timestamp, row.userId, row.level, songid, artistid, row.sessionId, row.location, row.userAgent)
-            cur.execute(songplay_table_insert, songplay_data)
-    except psycopg2.Error as e:
-        print('Error: Could not execute query to get artist_id and song_id ou insert data into songplays')
-        print(e)
+        if results:
+            songid, artistid = results
+        else:
+            songid, artistid = None, None
+
+        # insert songplay record
+        songplay_data = (row.timestamp, row.userId, row.level, songid, artistid, row.sessionId, row.location, row.userAgent)
+        cur.execute(songplay_table_insert, songplay_data)
+
 
 
 def process_data(cur, conn, filepath, func):
