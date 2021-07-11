@@ -14,16 +14,16 @@ def process_song_file(cur, filepath):
     """
     # open song file
     df = pd.DataFrame([pd.read_json(filepath, typ='series')])
-
-    # insert song record
-    song_data = list(df[['song_id', 'title', 'artist_id', 'year', 'duration']].values[0])
-    
-    cur.execute(song_table_insert, song_data)
     
     # insert artist record
     artist_data = list(df[['artist_id', 'artist_name', 'artist_location', 'artist_latitude', 'artist_longitude']].values[0])
     
     cur.execute(artist_table_insert, artist_data)
+
+    # insert song record
+    song_data = list(df[['song_id', 'title', 'artist_id', 'year', 'duration']].values[0])
+    
+    cur.execute(song_table_insert, song_data)
 
 
 def process_log_file(cur, filepath):
@@ -43,7 +43,7 @@ def process_log_file(cur, filepath):
     df['timestamp'] = pd.to_datetime(df['ts'], unit='ms')
 
     # insert time data records
-    time_data = (t, t.dt.hour, t.dt.day, t.dt.isocalendar().week, t.dt.month, t.dt.year, t.dt.weekday)
+    time_data = (t, t.dt.hour, t.dt.day, t.dt.week, t.dt.month, t.dt.year, t.dt.weekday)
     column_labels = ('start_time', 'hour', 'day', 'week', 'month', 'year', 'weekday')
     time_df =  pd.DataFrame(dict(zip(column_labels,time_data)))
     for i, row in time_df.iterrows():
@@ -107,7 +107,7 @@ def process_data(cur, conn, filepath, func):
 
 def main():
     try:
-        conn = psycopg2.connect("host=localhost dbname=sparkifydb user=postgres password=marco")
+        conn = psycopg2.connect("host=127.0.0.1 dbname=sparkifydb user=student password=student")
         cur = conn.cursor()
     except psycopg2.Error as e:
         print('Error: Could not to get database connection or cursor')
