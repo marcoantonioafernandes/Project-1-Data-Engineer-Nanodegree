@@ -37,7 +37,7 @@ def create_database():
     
     try:
     # connect to sparkify database
-        conn = psycopg2.connect("host=127.0.0.1 dbname=studentdb user=student password=student")
+        conn = psycopg2.connect("host=127.0.0.1 dbname=sparkifydb user=student password=student")
         cur = conn.cursor()
     except psycopg2.Error as e:
         print('Error: Could not to get database connection or cursor')
